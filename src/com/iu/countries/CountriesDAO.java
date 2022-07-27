@@ -3,37 +3,74 @@ package com.iu.countries;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import com.iu.util.DBConnector;
 
 public class CountriesDAO {
+	//getDetail : countries_id
+	public CountriesDTO getDetail(String country_id)throws Exception{
+		
+		CountriesDTO countriesDTO= null;
+		
+		//1. DB 연결
+		Connection con = DBConnector.getConnection();
+		
+		
+		//2. SQL 작성
+		String sql ="SELECT * FROM COUNTRIES WHERE COUNTRY_ID=?";
+		
+		//3. 미리 전송
+		PreparedStatement st = con.prepareStatement(sql);
+		
+		//4. ? 갑 세팅
+		st.setString(1, country_id);
+		
+		//5. 최종 전송 및 결과처리
+		ResultSet rs = st.executeQuery();
+		
+		
+		if(rs.next()) {
+			countriesDTO = new CountriesDTO();
+			countriesDTO.setCountry_id(rs.getString("country_id"));
+			countriesDTO.setCountry_name(rs.getString("country_name"));
+			countriesDTO.setRegion_id(rs.getInt("region_id"));
+		}
+				
+		DBConnector.disConnect(rs, st, con);
+		
+		return countriesDTO;
+	}
 	
-	//1. Regions 의 모든 데이터 가져오기
-	   public void getList() throws Exception {
-	      //1. DB 연결 DBConnertor에 이미 연결하는 메서드 만듬
-	      Connection con = DBConnector.getConnection();
-	      
-	      //2. Query 문 작성
-	      String sql ="SELECT * FROM COUNTRIES";//자바에선 ;를 생략해도 된다.
-	      
-	      //3. Query 문 미리 전송
-	      PreparedStatement st = con.prepareStatement(sql);//쿼리문을 미리 보내면 데이터베이스에서 준비중
-
-	      //4.
-	      
-	      //5. 최종 전송 후 결과를 처리 (데이터를 받아서 출력을 하든 뭘 하든 한다)
-	      ResultSet rs = st.executeQuery();
-	      
-	      // rs.next();한줄 읽어서 내려오는 방식 토큰과 비슷한 형식 그래서 next의 타입이 boolean이다
-	      while(rs.next()) {
-	        // int id = rs.getInt("Region_id");//스트링타입의 컬럼라벨은 컬럼명쓰기
-	         String name = rs.getString("COUNTRY_ID");
-	         System.out.println(name);
-	      }
-	      
-	      DBConnector.disConnect(rs, st, con);
-	      
-	   }
 	
+	public ArrayList<CountriesDTO> getList() throws Exception {
+		ArrayList<CountriesDTO> ar = new ArrayList();
+		
+		//1. DB 연결
+		Connection con = DBConnector.getConnection();
+		
+		//2. SQL 작성
+		String sql = "SELECT * FROM COUNTRIES";
+		
+		//3. 미리보내기
+		PreparedStatement st = con.prepareStatement(sql);
+		
+		//4. 최종전송 후 결과 처리
+		ResultSet rs = st.executeQuery();
+		
+		while(rs.next()) {
+			CountriesDTO countriesDTO = new CountriesDTO();
+			countriesDTO.setCountry_id(rs.getString("country_id"));
+			countriesDTO.setCountry_name(rs.getString("country_name"));
+			countriesDTO.setRegion_id(rs.getInt("region_id"));
+			ar.add(countriesDTO);
+			
+		}
+		
+		DBConnector.disConnect(rs, st, con);
+		
+		return ar;
+		
+	}
 
 }
