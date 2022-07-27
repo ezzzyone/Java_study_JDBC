@@ -31,6 +31,8 @@ public class CountriesDAO {
 	         System.out.println(name);
 	      }
 	      
+	      DBConnector.disConnect(rs, st, con);
+	      
 	   }
 	
 

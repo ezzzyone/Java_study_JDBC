@@ -7,6 +7,44 @@ import java.sql.ResultSet;
 import com.iu.util.DBConnector;
 
 public class RegionsDAO {
+	
+	//2. Regions에서 하나의 결과 (row)
+	
+	public RegionsDTO getDetail(int region_id) throws Exception{
+		
+		RegionsDTO regionsDTO = new RegionsDTO();
+		
+		//1.DB
+		Connection con = DBConnector.getConnection();
+		
+		//2.sql문
+		String sql ="SELECT * FROM REGIONS WHERE REGION_ID=?";
+		
+		//3.미리전송
+		PreparedStatement st = con.prepareStatement(sql);
+		
+		//4. ? 세팅
+		//WHERE NUM BETWEEN ?(1) AND ?(2); 변수 두개
+		st.setInt(1, region_id); //물음표인덱스번호,들어갈 값 세팅 (오라클은 인덱스 1부터 시작)
+		
+		//5.최종전송 결과처리
+		ResultSet rs = st.executeQuery();
+		
+		if (rs.next()) {
+			//int rId = rs.getInt(1);
+			//String rName = rs.getString(2);
+			//System.out.println(rId);
+			//System.out.println(rName);
+			regionsDTO.setRegion_id(rs.getInt("Region_id"));
+			regionsDTO.setRegion_name(rs.getString("Region_name"));
+			
+		}
+		DBConnector.disConnect(rs, st, con);
+		return regionsDTO;
+		
+		 
+		 
+	}
 
    //1. Regions 의 모든 데이터 가져오기
    public void getList() throws Exception {
@@ -31,6 +69,9 @@ public class RegionsDAO {
          System.out.println(id);
          System.out.println(name);
       }
+      
+      //6. 자원 해제
+      DBConnector.disConnect(rs, st, con);
       
    }
    
